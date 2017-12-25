@@ -12,7 +12,6 @@ package Reports;
 
 import classgroup.JComboHandle;
 import classgroup.JavaValidation;
-import classgroup.ReportGenerator;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -56,36 +55,7 @@ public class Report_Creditor extends javax.swing.JInternalFrame {
         }
     }
 
-    public void ReportGenerateAction() {
-        if (jComboBoxCreditorName.getSelectedItem().toString().equalsIgnoreCase("import report")) {
-            if (jRadioButtonDaily.isSelected() == true) {
-                q = "select * from tbl_import_product_record where date = '" + jTextFieldStartDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/IncomeReport.jrxml",conn);
-            }
-            if (jRadioButtonMonthly.isSelected() == true) {
-                q = "select * from tbl_import_product_record where date between '" + jTextFieldStartDate.getText() + "' and '" + jTextFieldEndDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/IncomeReport.jrxml",conn);
-            }
-        } else if (jComboBoxCreditorName.getSelectedItem().toString().equalsIgnoreCase("selling report")) {
-            if (jRadioButtonDaily.isSelected() == true) {
-                q = "select * from tbl_selling_product_record where date = '" + jTextFieldStartDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/SellReport.jrxml",conn);
-            }
-            if (jRadioButtonMonthly.isSelected() == true) {
-                q = "select * from tbl_selling_product_record where date between '" + jTextFieldStartDate.getText() + "' and '" + jTextFieldEndDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/SellReport.jrxml",conn);
-            }
-        } else if (jComboBoxCreditorName.getSelectedItem().toString().equalsIgnoreCase("damaged report")) {
-            if (jRadioButtonDaily.isSelected() == true) {
-                q = "select * from tbl_damage_lost_record where date = '" + jTextFieldStartDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/DamagedReport.jrxml",conn);
-            }
-            if (jRadioButtonMonthly.isSelected() == true) {
-                q = "select * from tbl_damage_lost_record where date between '" + jTextFieldStartDate.getText() + "' and '" + jTextFieldEndDate.getText() + "'";
-                new ReportGenerator().GenerateReport(q, "Reports/DamagedReport.jrxml",conn);
-            }
-        }
-    }
+    
 
     /** This method is called from within the constructor to
      * initialize the form.

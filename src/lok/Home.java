@@ -212,13 +212,13 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                     Product_Sale product_Sale = new Product_Sale(conn , name);
+                     Product_Sale Product_Sale = new Product_Sale(conn);
                     desktop.removeAll();
                     desktop.repaint();
-                    desktop.add(product_Sale);
-                    product_Sale.setLocation(10, 10);
-                    product_Sale.setVisible(true);
-                    product_Sale.setToolTipText("Product Selling");
+                    desktop.add(Product_Sale);
+                    Product_Sale.setLocation(10, 10);
+                    Product_Sale.setVisible(true);
+                    Product_Sale.setToolTipText("Product Selling");
 
 
                 }
@@ -234,7 +234,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Product_Sale_Creditors tfr = new Product_Sale_Creditors(conn,name);
+                    Product_Labor tfr = new Product_Labor(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
@@ -255,7 +255,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Printer_Test tfr = new Printer_Test(conn);
+                    Product_Debit_Credit tfr = new Product_Debit_Credit(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);

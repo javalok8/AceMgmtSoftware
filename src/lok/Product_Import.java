@@ -39,6 +39,7 @@ public class Product_Import extends javax.swing.JInternalFrame {
     private int import_id;
     double product_price = 0.0;
     int temp_qty_amount = 0;
+    private String description;
 
     public void fillProductNameCombo() {
 
@@ -64,12 +65,15 @@ public class Product_Import extends javax.swing.JInternalFrame {
         try {
 
             date = jTextFieldDate.getText().toString();
+            productNo = jTextFieldProductNo.getText().toString();
             productName = jComboBoxProductName.getSelectedItem().toString();
             productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
             price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
             product_qty = Integer.parseInt(jTextFieldQtyAmount.getText().toString());
             total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
-            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate, jTextFieldQtyPrice);
+            description = jTextAreaDescription.getText().toString();
+            
+            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo, jTextFieldQtyPrice);
             if (flag_tf == true) {
 //                q = "select product_name , product_qty_name from tbl_import_product_record where product_name=? and product_qty_name=?";
 //                pstm = conn.prepareStatement(q);
@@ -83,15 +87,17 @@ public class Product_Import extends javax.swing.JInternalFrame {
 //                } else {
                 total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQtyAmount.getText().toString());
                 System.out.println("Total Qty Amount from Transaction is: " + total_qty_amount);
-                q = "insert into tbl_import_product_record(date,product_name,product_qty_name,product_single_price,product_qty,total_amount,total_qty_amount) values(?,?,?,?,?,?,?)";
+                q = "insert into tbl_import_product_record(date,codeno,product_name,product_qty_name,product_single_price,product_qty,total_amount,qty_amount,description) values(?,?,?,?,?,?,?,?,?)";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, date);
-                pstm.setString(2, productName);
-                pstm.setString(3, productQtyName);
-                pstm.setDouble(4, price);
-                pstm.setInt(5, product_qty);
-                pstm.setDouble(6, total_amount);
-                pstm.setInt(7, total_qty_amount);
+                pstm.setString(2,productNo);
+                pstm.setString(3, productName);
+                pstm.setString(4, productQtyName);
+                pstm.setDouble(5, price);
+                pstm.setInt(6, product_qty);
+                pstm.setDouble(7, total_amount);
+                pstm.setInt(8, total_qty_amount);
+                pstm.setString(9,description);
                 pstm.executeUpdate();
                 pstm.close();
                 JOptionPane.showMessageDialog(this, "Product Added", "Product Add Information", JOptionPane.INFORMATION_MESSAGE);
@@ -117,6 +123,8 @@ public class Product_Import extends javax.swing.JInternalFrame {
         jTextFieldQtyPrice.setText("");
         jTextFieldQtyAmount.setText("");
         jTextFieldTotalAmount.setText("");
+        jTextFieldProductNo.setText("");
+        jTextAreaDescription.setText("");
     }
 
     public void delete() {
@@ -141,23 +149,26 @@ public class Product_Import extends javax.swing.JInternalFrame {
     public void update() {
         try {
             date = jTextFieldDate.getText().toString();
+            productNo = jTextFieldProductNo.getText().toString();
             productName = jComboBoxProductName.getSelectedItem().toString();
             productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
             price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
             product_qty = Integer.parseInt(jTextFieldQtyAmount.getText().toString());
             total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
-            total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQtyAmount.getText().toString());
+            description = jTextAreaDescription.getText().toString();
 
-            q = "update tbl_import_product_record set date=? , product_name=? ,product_qty_name=?, product_single_price=?,product_qty=? , total_amount=? ,total_qty_amount=? where import_id=?";
+            q = "update tbl_import_product_record set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_single_price=?,product_qty=? , total_amount=? ,qty_amount=? , description = ? where import_id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, date);
-            pstm.setString(2, productName);
-            pstm.setString(3, productQtyName);
-            pstm.setDouble(4, price);
-            pstm.setInt(5, product_qty);
-            pstm.setDouble(6, total_amount);
-            pstm.setInt(7, total_qty_amount);
-            pstm.setInt(8, import_id);
+                pstm.setString(2,productNo);
+                pstm.setString(3, productName);
+                pstm.setString(4, productQtyName);
+                pstm.setDouble(5, price);
+                pstm.setInt(6, product_qty);
+                pstm.setDouble(7, total_amount);
+                pstm.setInt(8, total_qty_amount);
+                pstm.setString(9,description);
+            pstm.setInt(10, import_id);
             pstm.executeUpdate();
             pstm.close();
             JOptionPane.showMessageDialog(this, "Product Updated", "Product Update Information", JOptionPane.INFORMATION_MESSAGE);
@@ -171,7 +182,7 @@ public class Product_Import extends javax.swing.JInternalFrame {
 
     public void updateJTable() {
         try {
-            q = "select date as 'Date',product_name as 'Product Name',product_qty_name as 'Qty Name', product_single_price as  'Qty Price' , product_qty as 'Product Qty', total_amount as 'Total Amount', import_id as  'Import ID' from tbl_import_product_record";
+            q = "select date as 'Date',codeno as 'Code NO',product_name as 'Product Name',product_qty_name as 'Qty Name', product_single_price as  'Qty Price' , product_qty as 'Product Qty', total_amount as 'Total Amount', id as  'Import ID' from tbl_import_product_record";
             JTableHandle jth = new JTableHandle(conn);
             jth.UpdateTable(jTableProductImport, q);
         } catch (Exception e) {
@@ -199,20 +210,24 @@ public class Product_Import extends javax.swing.JInternalFrame {
             rs = pstm.executeQuery();
             if (rs.next()) {
                 date = rs.getString("date");
+                productNo = rs.getString("codeno");
                 productName = rs.getString("product_name");
                 productQtyName = rs.getString("product_qty_name");
                 price = rs.getDouble("product_single_price");
                 product_qty = rs.getInt("product_qty");
                 total_amount = rs.getDouble("total_amount");
                 total_qty_amount = rs.getInt("total_qty_amount");
+                description = rs.getString("description");
                 import_id = rs.getInt("import_id");
 
                 jTextFieldDate.setText(date);
+                jTextFieldProductNo.setText(productNo);
                 jComboBoxProductName.setSelectedItem(productName);
                 jComboBoxProdcutQtyType.setSelectedItem(productQtyName);
                 jTextFieldQtyPrice.setText(String.valueOf(price));
                 jTextFieldQtyAmount.setText(String.valueOf(product_qty));
                 jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+                jTextAreaDescription.setText(description);
             }
         } catch (SQLException s) {
             s.printStackTrace();
@@ -260,6 +275,9 @@ public class Product_Import extends javax.swing.JInternalFrame {
         jComboBoxProdcutQtyType = new javax.swing.JComboBox();
         jLabel7 = new javax.swing.JLabel();
         jTextFieldProductNo = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaDescription = new javax.swing.JTextArea();
+        jLabel8 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableProductImport = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
@@ -391,6 +409,12 @@ public class Product_Import extends javax.swing.JInternalFrame {
             }
         });
 
+        jTextAreaDescription.setColumns(20);
+        jTextAreaDescription.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaDescription);
+
+        jLabel8.setText("Description");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -399,33 +423,34 @@ public class Product_Import extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextFieldDate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBoxProductName, javax.swing.GroupLayout.Alignment.LEADING, 0, 179, Short.MAX_VALUE)
-                            .addComponent(jComboBoxProdcutQtyType, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboBoxProductName, javax.swing.GroupLayout.Alignment.TRAILING, 0, 133, Short.MAX_VALUE)
+                            .addComponent(jTextFieldDate, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jComboBoxProdcutQtyType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextFieldQtyPrice, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                            .addComponent(jTextFieldProductNo)
-                            .addComponent(jTextFieldTotalAmount, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldQtyAmount, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldTotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldQtyAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldProductNo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldQtyPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -441,7 +466,7 @@ public class Product_Import extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel3)
                     .addComponent(jComboBoxProdcutQtyType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(jTextFieldProductNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -457,7 +482,15 @@ public class Product_Import extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(jTextFieldTotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel8)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -473,8 +506,8 @@ public class Product_Import extends javax.swing.JInternalFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTableProductImport.setModel(new javax.swing.table.DefaultTableModel(
@@ -561,22 +594,20 @@ public class Product_Import extends javax.swing.JInternalFrame {
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(11, 11, 11)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addGap(51, 51, 51))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41))
         );
 
         pack();
@@ -673,7 +704,7 @@ public class Product_Import extends javax.swing.JInternalFrame {
             System.out.println("product name: " + productName);
             System.out.println("product qty name: " + productQtyName);
             try {
-                q = "select qty_price , qty_amount from tbl_qty_type_manager where product_name=? and qty_name=?";
+                q = "select codeno , qty_price , qty_amount from tbl_qty_type_manager where product_name=? and qty_name=?";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, productName);
                 pstm.setString(2, productQtyName);
@@ -681,10 +712,13 @@ public class Product_Import extends javax.swing.JInternalFrame {
                 if (rs.next()) {
                     product_price = rs.getDouble("qty_price");
                     temp_qty_amount = rs.getInt("qty_amount");
+                    productNo = rs.getString("codeno");
                     System.out.println("Temp qty amount: " + temp_qty_amount);
                     //   total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQtyAmount.getText().toString());
                     System.out.println("prodct price: " + product_price);
+                    jTextFieldProductNo.setText(productNo);
                     jTextFieldQtyPrice.setText(String.valueOf(product_price));
+                    
 
                 }
                 rs.close();
@@ -736,11 +770,14 @@ public class Product_Import extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableProductImport;
+    private javax.swing.JTextArea jTextAreaDescription;
     private javax.swing.JTextField jTextFieldDate;
     private javax.swing.JTextField jTextFieldProductNo;
     private javax.swing.JTextField jTextFieldQtyAmount;

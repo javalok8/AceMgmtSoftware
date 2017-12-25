@@ -4,12 +4,14 @@
  */
 
 /*
- * Product_damage_lost_Entry.java
+ * Product_Sale.java
  *
- * Created on May 27, 2014, 3:53:52 PM
+ * Created on May 27, 2014, 3:49:34 PM
  */
 package lok;
 
+import NepaliCalendarClassGroup.NepaliDate;
+import classgroup.CountCharacter;
 import classgroup.JComboHandle;
 import classgroup.JTableHandle;
 import classgroup.JavaValidation;
@@ -21,28 +23,27 @@ import javax.swing.JOptionPane;
  *
  * @author javalok
  */
-public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
-
+public class Product_Debit_Credit extends javax.swing.JInternalFrame {
     JavaValidation javaValidation;
     private Connection conn;
     private PreparedStatement pstm = null;
     private ResultSet rs = null;
     private String q = "";
     private String date;
-    private String codeno;
+    private String type;
+    private String productNo;
     private String productName;
     private String productQtyName;
-    private String type;
     private double price;
     private int product_qty;
     private double total_amount;
-    private int total_qty_amount;
-    private int id;
-    double product_price = 0.0;
-    int temp_qty_amount = 0;
     private String description;
+   // private int total_qty_amount, temp_qty_amount;
+    private int id;
+
 
     public void fillProductNameCombo() {
+
         try {
             q = "select product_name from tbl_productname_entry";
             new JComboHandle(conn).fillComboProductName(jComboBoxProductName, q);
@@ -55,76 +56,82 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         try {
             System.out.println("product name inside fillProductQtynameCombo() is: " + productNames);
             q = "select qty_name from tbl_qty_type_manager where product_name=?";
-            new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQty, q, productNames);
+            new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQtyType, q, productNames);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void add() {
-        try {
-
+        try {           
             date = jTextFieldDate.getText().toString();
-            codeno = jTextFieldProductNo.getText().toString();
             type = jComboBoxType.getSelectedItem().toString();
+            productNo = jTextFieldProductNo.getText().toString();
             productName = jComboBoxProductName.getSelectedItem().toString();
-            productQtyName = jComboBoxProdcutQty.getSelectedItem().toString();
+            productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
             price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
             product_qty = Integer.parseInt(jTextFieldQty.getText().toString());
-            total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
-            description = jTextArea1.getText().toString();
-
-            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo, jTextFieldQtyPrice, jTextFieldQty);
+            total_amount  = price * product_qty;
+            description = jTextAreaDescription.getText().toString();
+            
+            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo, jTextFieldQtyPrice);
+            
             if (flag_tf == true) {
-                total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQty.getText().toString());
-                q = "insert into tbl_damage_lost_product(date,codeno,product_name,product_qty_name,product_qty,product_single_price,total_amount,type,description) values(?,?,?,?,?,?,?,?,?)";
+                
+                q = "insert into tbl_credit_debit(date,codeno,product_name,qty_type,total_qty,product_single_price,total_amount,description,type) values(?,?,?,?,?,?,?,?,?)";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, date);
-                pstm.setString(2, codeno);
+                pstm.setString(2,productNo);
                 pstm.setString(3, productName);
                 pstm.setString(4, productQtyName);
                 pstm.setInt(5, product_qty);
                 pstm.setDouble(6, price);
                 pstm.setDouble(7, total_amount);
-                pstm.setString(8, type);
-                pstm.setString(9,description);
+                pstm.setString(8, description);
+                pstm.setString(9,type);
+                
                 pstm.executeUpdate();
                 pstm.close();
-                JOptionPane.showMessageDialog(this, "Damage Product Recorded", "Damage Product Add Information", JOptionPane.INFORMATION_MESSAGE);
-                this.updateJTable();
-                this.cancel();
-                //  }
-            } else {
+                 JOptionPane.showMessageDialog(this, "Sale Product Added", "Sale Add Information", JOptionPane.INFORMATION_MESSAGE);
+                 this.updateJTable();
+                  this.cancel();
+            
+            }else {
                 JOptionPane.showMessageDialog(this, "TextField is Empty", "TextField Information", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
-    }
+    
+    }       
 
     public void cancel() {
         jButtonAdd.setEnabled(true);
         //  jTextFieldDate.setText("");
-        jComboBoxType.setSelectedIndex(0);
         jComboBoxProductName.setSelectedIndex(0);
-        jComboBoxProdcutQty.setSelectedIndex(0);
+        jComboBoxProdcutQtyType.setSelectedIndex(0);
         jTextFieldQtyPrice.setText("");
         jTextFieldQty.setText("");
         jTextFieldTotalAmount.setText("");
         jTextFieldProductNo.setText("");
-        jTextArea1.setText("");
+        jTextAreaDescription.setText("");
+        jComboBoxType.setSelectedIndex(0);
     }
 
     public void delete() {
         try {
-            q = "delete from tbl_damage_lost_product where id=?";
-            pstm.setInt(4,id);
+            q = "delete from tbl_credit_debit where date=? and product_name=? and qty_type=? and id=?";
+            pstm = conn.prepareStatement(q);
+            pstm.setString(1, jTextFieldDate.getText().toString());
+            pstm.setString(2, jComboBoxProductName.getSelectedItem().toString());
+            pstm.setString(3, jComboBoxProdcutQtyType.getSelectedItem().toString());
+            pstm.setInt(4, id);
             pstm.executeUpdate();
             pstm.close();
-            JOptionPane.showMessageDialog(this, "Damage Product Record Deleted", "Damage Product Delete Information", JOptionPane.INFORMATION_MESSAGE);
+              JOptionPane.showMessageDialog(this, "Sale Product Deleted", "Product Sale Delete Information", JOptionPane.INFORMATION_MESSAGE);
             this.updateJTable();
             this.cancel();
         } catch (Exception e) {
@@ -137,30 +144,31 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
     public void update() {
         try {
             date = jTextFieldDate.getText().toString();
-            codeno = jTextFieldProductNo.getText().toString();
             type = jComboBoxType.getSelectedItem().toString();
+            productNo = jTextFieldProductNo.getText().toString();
             productName = jComboBoxProductName.getSelectedItem().toString();
-            productQtyName = jComboBoxProdcutQty.getSelectedItem().toString();
+            productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
             price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
             product_qty = Integer.parseInt(jTextFieldQty.getText().toString());
-            total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
-            description = jTextArea1.getText().toString();
+            total_amount  = price * product_qty;
+            description = jTextAreaDescription.getText().toString();
             
-            q = "update tbl_damage_lost_product set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_price=?,product_qty=?,total_amount=? ,type=? ,description=? where id=?";
+            q = "update tbl_credit_debit set date=? ,codeno=? , product_name=? ,qty_type=?, total_qty=? ,product_single_price=?, total_amount=? , description=? , type=? where id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, date);
-            pstm.setString(2, codeno);
+            pstm.setString(2,productNo);
             pstm.setString(3, productName);
             pstm.setString(4, productQtyName);
-            pstm.setDouble(5, price);
-            pstm.setInt(6, product_qty);
+            pstm.setInt(5, product_qty);
+            pstm.setDouble(6, price);
             pstm.setDouble(7, total_amount);
-            pstm.setString(8,type);
-            pstm.setString(9, description);
-            pstm.setDouble(10, id);
+            pstm.setString(8, description);
+            pstm.setString(9,type);
+            pstm.setInt(10, id);
+            
             pstm.executeUpdate();
             pstm.close();
-            JOptionPane.showMessageDialog(this, "Damage Product Updated", " Damage Product Update Information", JOptionPane.INFORMATION_MESSAGE);
+              JOptionPane.showMessageDialog(this, "Product Sale Updated", "Product Sale Update Information", JOptionPane.INFORMATION_MESSAGE);
             this.updateJTable();
             this.cancel();
         } catch (Exception e) {
@@ -171,9 +179,9 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
 
     public void updateJTable() {
         try {
-            q = "select date as 'Date',type as 'Type' ,product_name as 'Product Name',product_qty_name as 'Qty Name', product_price as  'Qty Price' , product_qty as 'Product Qty',total_amount as 'Total Amount', id as  'ID' from tbl_damage_lost_product";
+            q = "select date as 'Date' , codeno as 'Code NO' , product_name as 'Product Name', qty_type as 'Qty', product_single_price as  'Price' , total_amount as 'Total Amount' , id as 'ID' from tbl_credit_debit";
             JTableHandle jth = new JTableHandle(conn);
-            jth.UpdateTable(jTableDamageEntry, q);
+            jth.UpdateTable(jTableSelling, q);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Exception Lok: " + e.getMessage(), "Exception Caught!", JOptionPane.WARNING_MESSAGE);
@@ -183,55 +191,70 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
     public void mouseClickJTable() {
         jButtonAdd.setEnabled(false);
         jButtonCancel.setEnabled(true);
-        jButtonDelete.setEnabled(true);
-        jButtonUpdate.setEnabled(true);
+       // jButtonDelete.setEnabled(true);
+       // jButtonUpdate.setEnabled(true);
 
         try {
-            int myrow = jTableDamageEntry.getSelectedRow();
+            int myrow = jTableSelling.getSelectedRow();
 
 //            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
 //            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
 //            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            String qtyid_click = (jTableDamageEntry).getModel().getValueAt(myrow, 7).toString();
-            q = "select *from tbl_damage_lost_product where id=?";
+            //  String qtydate_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
+            String qtyproductname_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
+            String qtyproductqtyname_click = (jTableSelling).getModel().getValueAt(myrow, 1).toString();
+            String codeno_click = (jTableSelling).getModel().getValueAt(myrow, 2).toString();
+            //q = "select *from tbl_temp_selling_product where date=? and product_name=? and product_qty_name=?";
+            q = "select *from tbl_credit_debit where product_name=? and qty_type=? and codeno=?";
             pstm = conn.prepareStatement(q);
-            pstm.setString(1, qtyid_click);
+            //  pstm.setString(1, qtydate_click);
+            pstm.setString(1, qtyproductname_click);
+            pstm.setString(2, qtyproductqtyname_click);
+            pstm.setString(3,codeno_click);
             rs = pstm.executeQuery();
             if (rs.next()) {
                 date = rs.getString("date");
-                codeno = rs.getString("codeno");
+                productNo = rs.getString("codeno");
                 productName = rs.getString("product_name");
-                productQtyName = rs.getString("product_qty_name");
+                productQtyName = rs.getString("qty_type");
                 price = rs.getDouble("product_single_price");
-                product_qty = rs.getInt("product_qty");
                 total_amount = rs.getDouble("total_amount");
-                type = rs.getString("type");
+                System.out.println("Total Amount from Mouse Click() is: " + total_amount);
+        
                 description = rs.getString("description");
+                type = rs.getString("type");
                 id = rs.getInt("id");
+
+                jTextFieldDate.setText(date);
+                jTextFieldProductNo.setText(productNo);
+                jComboBoxProductName.setSelectedItem(productName);
+                jTextFieldQtyPrice.setText(String.valueOf(price));
+                jTextFieldQty.setText(String.valueOf(product_qty));
+                jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+                jTextAreaDescription.setText(description);
+                jComboBoxType.setSelectedItem(type);
             }
         } catch (SQLException s) {
             s.printStackTrace();
             JOptionPane.showMessageDialog(this, "Exception Lok: " + s.getMessage(), "Exception Caught!", JOptionPane.WARNING_MESSAGE);
         }
-        jTextFieldDate.setText(date);
-        jTextFieldProductNo.setText(codeno);
-        jComboBoxType.setSelectedItem(type);
-        jComboBoxProductName.setSelectedItem(productName);
-        jComboBoxProdcutQty.setSelectedItem(productQtyName);
-        jTextFieldQtyPrice.setText(String.valueOf(price));
-        jTextFieldQty.setText(String.valueOf(product_qty));
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
-        jTextArea1.setText(description);
+
+        jComboBoxProdcutQtyType.setSelectedItem(productQtyName);
+
     }
 
-    /** Creates new form Product_damage_lost_Entry */
-    public Product_damage_lost_Entry(java.sql.Connection conn) {
+
+    /** Creates new form Product_Sale */
+    public Product_Debit_Credit(java.sql.Connection conn) {
         initComponents();
         this.conn = conn;
+        
+        //   this.ptr = ptr;
         jButtonAdd.setEnabled(true);
         jButtonCancel.setEnabled(false);
-        jButtonDelete.setEnabled(false);
-        jButtonUpdate.setEnabled(false);
+        //jButtonDelete.setEnabled(false);
+        //jButtonUpdate.setEnabled(false);
+      //  this.settingBillno();
         this.fillProductNameCombo();
         this.updateJTable();
         javaValidation = new JavaValidation();
@@ -251,24 +274,24 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jTextFieldDate = new javax.swing.JTextField();
-        jComboBoxType = new javax.swing.JComboBox();
+        jComboBoxProductName = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jTextFieldQty = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jTextFieldQtyPrice = new javax.swing.JTextField();
-        jComboBoxProductName = new javax.swing.JComboBox();
-        jLabel6 = new javax.swing.JLabel();
-        jTextFieldQty = new javax.swing.JTextField();
-        jComboBoxProdcutQty = new javax.swing.JComboBox();
+        jComboBoxProdcutQtyType = new javax.swing.JComboBox();
         jLabel7 = new javax.swing.JLabel();
-        jTextFieldTotalAmount = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
         jTextFieldProductNo = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jTextFieldTotalAmount = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jTextAreaDescription = new javax.swing.JTextArea();
         jLabel9 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jComboBoxType = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTableDamageEntry = new javax.swing.JTable();
+        jTableSelling = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jButtonDelete = new javax.swing.JButton();
         jButtonCancel = new javax.swing.JButton();
@@ -276,11 +299,29 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         jButtonUpdate = new javax.swing.JButton();
 
         setClosable(true);
-        setTitle("Damage|Lost Product Record");
+        setTitle("Product Selling");
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameOpened(evt);
+            }
+        });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Product Name Entry"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Product Debit Credit"));
 
-        jLabel1.setText("Type");
+        jLabel1.setText("Product Name");
 
         jLabel2.setText("Date");
 
@@ -301,37 +342,6 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             }
         });
 
-        jComboBoxType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-", "Lost", "Damage" }));
-        jComboBoxType.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jComboBoxTypeItemStateChanged(evt);
-            }
-        });
-
-        jLabel3.setText("Product Name");
-
-        jLabel4.setText("Product qty Type");
-
-        jLabel5.setText("Product Price");
-
-        jTextFieldQtyPrice.setEditable(false);
-        jTextFieldQtyPrice.setToolTipText("");
-        jTextFieldQtyPrice.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextFieldQtyPriceMouseClicked(evt);
-            }
-        });
-        jTextFieldQtyPrice.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldQtyPriceActionPerformed(evt);
-            }
-        });
-        jTextFieldQtyPrice.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldQtyPriceKeyTyped(evt);
-            }
-        });
-
         jComboBoxProductName.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-" }));
         jComboBoxProductName.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -339,7 +349,9 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel6.setText("Product Qty");
+        jLabel3.setText("Product qty Type");
+
+        jLabel4.setText("Product qty");
 
         jTextFieldQty.setToolTipText("");
         jTextFieldQty.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -361,41 +373,35 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             }
         });
 
-        jComboBoxProdcutQty.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-" }));
-        jComboBoxProdcutQty.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jComboBoxProdcutQtyItemStateChanged(evt);
-            }
-        });
-        jComboBoxProdcutQty.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxProdcutQtyActionPerformed(evt);
-            }
-        });
+        jLabel5.setText("Product price");
 
-        jLabel7.setText("Total Amount");
-
-        jTextFieldTotalAmount.setEditable(false);
-        jTextFieldTotalAmount.setToolTipText("Mouse Click to get Total Amount");
-        jTextFieldTotalAmount.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTextFieldQtyPrice.setEditable(false);
+        jTextFieldQtyPrice.setToolTipText("");
+        jTextFieldQtyPrice.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextFieldTotalAmountMouseClicked(evt);
+                jTextFieldQtyPriceMouseClicked(evt);
             }
         });
-        jTextFieldTotalAmount.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldQtyPrice.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldTotalAmountActionPerformed(evt);
+                jTextFieldQtyPriceActionPerformed(evt);
             }
         });
-        jTextFieldTotalAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTextFieldQtyPrice.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                jTextFieldTotalAmountKeyTyped(evt);
+                jTextFieldQtyPriceKeyTyped(evt);
             }
         });
 
-        jLabel8.setText("Product No");
+        jComboBoxProdcutQtyType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-" }));
+        jComboBoxProdcutQtyType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxProdcutQtyTypeItemStateChanged(evt);
+            }
+        });
 
-        jTextFieldProductNo.setEditable(false);
+        jLabel7.setText("Product No");
+
         jTextFieldProductNo.setToolTipText("");
         jTextFieldProductNo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -408,16 +414,50 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             }
         });
         jTextFieldProductNo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldProductNoKeyReleased(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 jTextFieldProductNoKeyTyped(evt);
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        jLabel6.setText("Total Amount");
+
+        jTextFieldTotalAmount.setToolTipText("");
+        jTextFieldTotalAmount.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextFieldTotalAmountMouseClicked(evt);
+            }
+        });
+        jTextFieldTotalAmount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldTotalAmountActionPerformed(evt);
+            }
+        });
+        jTextFieldTotalAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldTotalAmountKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldTotalAmountKeyTyped(evt);
+            }
+        });
+
+        jTextAreaDescription.setColumns(20);
+        jTextAreaDescription.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaDescription);
 
         jLabel9.setText("Description");
+
+        jLabel8.setText("Type");
+
+        jComboBoxType.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "-", "Credit", "Debit" }));
+        jComboBoxType.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxTypeItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -427,44 +467,47 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(27, 27, 27))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(29, 29, 29))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(39, 39, 39))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(40, 40, 40))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(22, 22, 22))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jTextFieldProductNo, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextFieldQty, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextFieldQtyPrice, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jTextFieldTotalAmount)
+                                .addComponent(jComboBoxProdcutQtyType, 0, 177, Short.MAX_VALUE)
+                                .addComponent(jComboBoxProductName, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 22, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxType, 0, 147, Short.MAX_VALUE)
-                            .addComponent(jTextFieldDate))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxProductName, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextFieldTotalAmount)
-                            .addComponent(jTextFieldQty)
-                            .addComponent(jTextFieldQtyPrice)
-                            .addComponent(jTextFieldProductNo)
-                            .addComponent(jComboBoxProdcutQty, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(48, 48, 48))))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(47, 47, 47)
+                                .addComponent(jComboBoxType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -472,42 +515,42 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBoxType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBoxProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jComboBoxProdcutQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
+                    .addComponent(jComboBoxType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jComboBoxProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jComboBoxProdcutQtyType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
                     .addComponent(jTextFieldProductNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextFieldQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jTextFieldQtyPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextFieldQty, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
                     .addComponent(jTextFieldTotalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(59, 59, 59)
+                        .addComponent(jLabel9))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(jLabel9)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(26, 26, 26)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -517,7 +560,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -527,7 +570,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jTableDamageEntry.setModel(new javax.swing.table.DefaultTableModel(
+        jTableSelling.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -538,12 +581,12 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTableDamageEntry.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTableSelling.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableDamageEntryMouseClicked(evt);
+                jTableSellingMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(jTableDamageEntry);
+        jScrollPane1.setViewportView(jTableSelling);
 
         jButtonDelete.setText("Delete");
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -605,26 +648,26 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         pack();
@@ -632,6 +675,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
 
     private void jTextFieldDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldDateMouseClicked
         new NepaliCalendarClassGroup.NepaliDate().setTextFieldWithNepaliDateValue(jTextFieldDate);
+        String date = jTextFieldDate.getText().toString();
         jButtonCancel.setEnabled(true);
 }//GEN-LAST:event_jTextFieldDateMouseClicked
 
@@ -640,8 +684,24 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
 }//GEN-LAST:event_jTextFieldDateActionPerformed
 
     private void jTextFieldDateKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldDateKeyTyped
-        javaValidation.getDateValue(evt);
+        // TODO add your handling code here:
 }//GEN-LAST:event_jTextFieldDateKeyTyped
+
+    private void jTextFieldQtyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldQtyMouseClicked
+        // TODO add your handling code here:
+}//GEN-LAST:event_jTextFieldQtyMouseClicked
+
+    private void jTextFieldQtyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldQtyActionPerformed
+        // TODO add your handling code here:
+}//GEN-LAST:event_jTextFieldQtyActionPerformed
+
+    private void jTextFieldQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyTyped
+        javaValidation.getNumberValue(evt);
+        double price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
+        double qty = Double.parseDouble(jTextFieldQty.getText().toString());
+        double total_amount = price*qty;
+        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+}//GEN-LAST:event_jTextFieldQtyKeyTyped
 
     private void jTextFieldQtyPriceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldQtyPriceMouseClicked
         // TODO add your handling code here:
@@ -655,49 +715,84 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 }//GEN-LAST:event_jTextFieldQtyPriceKeyTyped
 
-    private void jTextFieldQtyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldQtyMouseClicked
-        // TODO add your handling code here:
-}//GEN-LAST:event_jTextFieldQtyMouseClicked
-
-    private void jTextFieldQtyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldQtyActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_jTextFieldQtyActionPerformed
-
-    private void jTextFieldQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyTyped
-        javaValidation.getNumberValue(evt);
-           double price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-        double qty = Double.parseDouble(jTextFieldQty.getText().toString());
-        double total_amount = price*qty;
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
-}//GEN-LAST:event_jTextFieldQtyKeyTyped
-
     private void jComboBoxProductNameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxProductNameItemStateChanged
         productName = jComboBoxProductName.getSelectedItem().toString();
         System.out.println("Product Name is: " + productName);
         if (evt.getStateChange() == ItemEvent.SELECTED) {
 
-            if (jComboBoxProdcutQty.getModel() != null) {
-                jComboBoxProdcutQty.removeAllItems();
-                jComboBoxProdcutQty.addItem("-");
+            if (jComboBoxProdcutQtyType.getModel() != null) {
+                jComboBoxProdcutQtyType.removeAllItems();
+                jComboBoxProdcutQtyType.addItem("-");
             }
             this.fillProductQtyNameCombo(productName);
         }
     }//GEN-LAST:event_jComboBoxProductNameItemStateChanged
 
-    private void jComboBoxTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxTypeItemStateChanged
-    }//GEN-LAST:event_jComboBoxTypeItemStateChanged
+    private void jComboBoxProdcutQtyTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxProdcutQtyTypeItemStateChanged
+        double product_price = 0.0;
+//        productName = jComboBoxProductName.getSelectedItem().toString();
+//        productQtyName= jComboBoxProdcutQtyType.getSelectedItem().toString();
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
+            System.out.println("product name: " + productName);
+            System.out.println("product qty name: " + productQtyName);
+            try {
+                q = "select codeno , buying_price from tbl_qty_type_manager where product_name=? and qty_type=?";
+                pstm = conn.prepareStatement(q);
+                pstm.setString(1, productName);
+                pstm.setString(2, productQtyName);
+                rs = pstm.executeQuery();
+                if (rs.next()) {
+                    product_price = rs.getDouble("buying_price");
+                    productNo = rs.getString("codeno");
 
-    private void jTableDamageEntryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDamageEntryMouseClicked
+                    //  total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQty.getText().toString());
+                    jTextFieldProductNo.setText(productNo);
+                    System.out.println("prodct price: " + product_price);
+                    jTextFieldQtyPrice.setText(String.valueOf(product_price));
+                }
+                rs.close();
+                pstm.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }//GEN-LAST:event_jComboBoxProdcutQtyTypeItemStateChanged
+
+    private void jTextFieldQtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyReleased
+        double price, total_amount;
+        int qty;
+        price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
+        qty = Integer.parseInt(jTextFieldQty.getText().toString());
+        String p = String.valueOf(qty);
+        total_amount = price * Double.parseDouble(p);
+        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+    }//GEN-LAST:event_jTextFieldQtyKeyReleased
+
+    private void jTableSellingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableSellingMouseClicked
         this.mouseClickJTable();
-    }//GEN-LAST:event_jTableDamageEntryMouseClicked
+    }//GEN-LAST:event_jTableSellingMouseClicked
 
-    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-        this.add();
-    }//GEN-LAST:event_jButtonAddActionPerformed
+    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
+    }//GEN-LAST:event_formInternalFrameOpened
 
-    private void jButtonUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUpdateActionPerformed
-        this.update();
-    }//GEN-LAST:event_jButtonUpdateActionPerformed
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+//        try {
+//            //Cancel the device.
+//            ptr.setDeviceEnabled(false);
+//
+//            //Release the device exclusive control right.
+//            ptr.release();
+//
+//            //Finish using the device.
+//            ptr.close();
+//        } catch (JposException ex) {
+//            ex.printStackTrace();
+//        }
+//        // JavaPOS's code for Step1--END
+//        System.exit(0);
+    }//GEN-LAST:event_formInternalFrameClosing
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
         this.delete();
@@ -707,64 +802,13 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         this.cancel();
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
-    private void jComboBoxProdcutQtyItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxProdcutQtyItemStateChanged
+    private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
+        this.add();
+    }//GEN-LAST:event_jButtonAddActionPerformed
 
-//        productName = jComboBoxProductName.getSelectedItem().toString();
-//        productQtyName= jComboBoxProdcutQtyType.getSelectedItem().toString();
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            productQtyName = jComboBoxProdcutQty.getSelectedItem().toString();
-            System.out.println("product name: " + productName);
-            System.out.println("product qty name: " + productQtyName);
-            try {
-                q = "select qty_price ,codeno from tbl_qty_type_manager where product_name=? and qty_name=?";
-                pstm = conn.prepareStatement(q);
-                pstm.setString(1, productName);
-                pstm.setString(2, productQtyName);
-                rs = pstm.executeQuery();
-                if (rs.next()) {
-                    product_price = rs.getDouble("qty_price");
-                    String codeno1 = rs.getString("codeno");
-                    //  total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQty.getText().toString());
-                    System.out.println("prodct price: " + product_price);
-                    jTextFieldQtyPrice.setText(String.valueOf(product_price));
-                    jTextFieldProductNo.setText(codeno1);
-                }
-                rs.close();
-                pstm.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-    }//GEN-LAST:event_jComboBoxProdcutQtyItemStateChanged
-
-    private void jTextFieldTotalAmountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountMouseClicked
-        // TODO add your handling code here:
-}//GEN-LAST:event_jTextFieldTotalAmountMouseClicked
-
-    private void jTextFieldTotalAmountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountActionPerformed
-        // TODO add your handling code here:
-}//GEN-LAST:event_jTextFieldTotalAmountActionPerformed
-
-    private void jTextFieldTotalAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountKeyTyped
-        // TODO add your handling code here:
-}//GEN-LAST:event_jTextFieldTotalAmountKeyTyped
-
-    private void jTextFieldQtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyReleased
-        double price, total_amount;
-        int qty;
-
-        price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-        qty = Integer.parseInt(jTextFieldQty.getText().toString());
-        String p = String.valueOf(qty);
-        total_amount = price * Double.parseDouble(p);
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
-
-    }//GEN-LAST:event_jTextFieldQtyKeyReleased
-
-    private void jComboBoxProdcutQtyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxProdcutQtyActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBoxProdcutQtyActionPerformed
+    private void jButtonUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonUpdateActionPerformed
+        this.update();
+    }//GEN-LAST:event_jButtonUpdateActionPerformed
 
     private void jTextFieldProductNoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldProductNoMouseClicked
         // TODO add your handling code here:
@@ -774,16 +818,40 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldProductNoActionPerformed
 
+    private void jTextFieldProductNoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldProductNoKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldProductNoKeyReleased
+
     private void jTextFieldProductNoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldProductNoKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldProductNoKeyTyped
+
+    private void jTextFieldTotalAmountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldTotalAmountMouseClicked
+
+    private void jTextFieldTotalAmountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldTotalAmountActionPerformed
+
+    private void jTextFieldTotalAmountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldTotalAmountKeyReleased
+
+    private void jTextFieldTotalAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldTotalAmountKeyTyped
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldTotalAmountKeyTyped
+
+    private void jComboBoxTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxTypeItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBoxTypeItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonCancel;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonUpdate;
-    private javax.swing.JComboBox jComboBoxProdcutQty;
+    private javax.swing.JComboBox jComboBoxProdcutQtyType;
     private javax.swing.JComboBox jComboBoxProductName;
     private javax.swing.JComboBox jComboBoxType;
     private javax.swing.JLabel jLabel1;
@@ -800,8 +868,8 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTableDamageEntry;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JTable jTableSelling;
+    private javax.swing.JTextArea jTextAreaDescription;
     private javax.swing.JTextField jTextFieldDate;
     private javax.swing.JTextField jTextFieldProductNo;
     private javax.swing.JTextField jTextFieldQty;

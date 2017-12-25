@@ -11,7 +11,6 @@
 package Reports;
 
 import classgroup.JavaValidation;
-import classgroup.ReportGenerator;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -204,7 +203,6 @@ public class TotalFinanceReport extends javax.swing.JInternalFrame {
 
 
         //Open Report
-        new ReportGenerator().GenerateReport("Reports/FinalFinanceReport.jrxml", conn);
     }
 
     /** This method is called from within the constructor to
