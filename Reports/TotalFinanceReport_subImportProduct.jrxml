@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalFinanceReport_subreport1" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="39866b85-266a-42d1-92df-986f58fa5261">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Program Files\\SaleDepartment new Final\\dist\\Reports\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from report_temp where a ='import']]>
+	</queryString>
+	<field name="a" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="b" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="c" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="d" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="total_im" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{c}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="30440308-4da5-4fbd-9cf6-7636a77eac43" x="3" y="5" width="219" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="17" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Import Products]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="71c03f86-733a-4b69-b7c1-13fbe2e265f6" x="69" y="3" width="114" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3c21a3d5-1087-47d4-88db-e8822037e203" x="20" y="4" width="35" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.N.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="6ced3198-0317-4074-9f62-172cc6ce0d98" x="2" y="23" width="353" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Double"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="9eaecb95-cf63-4a78-8288-6a8e9ab28eae" x="205" y="3" width="85" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Amount]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement uuid="45ad2e05-e26a-4578-8cab-616ba9391d69" x="205" y="0" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="467b47be-df82-4c5b-a7c1-59d4402b826b" x="3" y="23" width="313" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Solid" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement uuid="a6fa20dd-3ce1-4a6e-9ac9-188e3a73a568" x="20" y="4" width="35" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="10792934-e590-4b2b-9514-0db43705b6c0" x="69" y="3" width="113" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="102" splitType="Stretch">
+			<textField>
+				<reportElement uuid="aa79c195-77ba-491b-a0f2-5a8dd75a116b" x="164" y="0" width="126" height="20"/>
+				<textElement textAlignment="Right">
+					<font size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{total_im}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement uuid="5b5100e5-650b-48d3-b5b5-b147d0b91a72" x="1" y="35" width="288" height="67"/>
+				<subreportParameter name="total_im">
+					<subreportParameterExpression><![CDATA[$V{total_im}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"TotalFinanceReport_subDamageProduct.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FinalFinaceReport" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="446fe5f9-5113-4094-89c2-5fdbbf85b9e9">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Program Files\\SaleDepartment new Final\\dist\\Reports\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from tbl_import_product_record]]>
+	</queryString>
+	<field name="date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_qty_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_single_price" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_qty" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_qty_amount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="import_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="91" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="f4592f89-c217-426b-a09d-107a26abd8c8" x="41" y="4" width="631" height="27"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="20" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Shree Baishali Departmental Store]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9d211d9b-62fc-4435-b3ab-382fd42f1e4c" x="174" y="57" width="425" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[TEL: 067- 421234]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="96b23be6-e312-4ce5-98e2-772574e16019" x="174" y="31" width="425" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Kusma, Parbat]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="907993c2-b757-4ca9-8cea-9be6c2fac01d" x="-30" y="90" width="867" height="1"/>
+				<graphicElement>
+					<pen lineWidth="5.0" lineStyle="Double"/>
+				</graphicElement>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="63" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="ee0daff6-0758-4ca7-8ce6-1f618be3f563" x="-25" y="29" width="850" height="34" forecolor="#CCCCCC" backcolor="#666666"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f6e60385-cab8-4051-9b55-253a866eb31f" x="550" y="2" width="271" height="20" backcolor="#000000"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="3f040ae4-28e0-4bf3-9062-19ded14e32c0" x="620" y="2" width="179" height="20" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Aharoni" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Finance Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6a72e3f7-a386-4924-8079-7fdee424f669" x="476" y="34" width="269" height="24" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="19" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total Expense]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="09c19c83-6e5c-42c8-8e8e-b848dfdc65ba" x="37" y="34" width="269" height="24" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="19" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Total Income]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="60" splitType="Stretch">
+			<subreport>
+				<reportElement uuid="2e7624e1-b513-4da7-beb4-584c9939683b" x="0" y="3" width="374" height="57"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"TotalFinanceReport_subSellProduct.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement uuid="aafe0c3f-a4b9-40dd-a017-cf268ac20209" x="412" y="3" width="390" height="57"/>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR}+"TotalFinanceReport_subImportProduct.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

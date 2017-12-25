@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IncomeReport" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a31d13e-023f-48a0-849b-94b0504013b6">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select * from tbl_import_product_record]]>
+	</queryString>
+	<field name="date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_qty_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_single_price" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="product_qty" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_qty_amount" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="import_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="90" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="a75e2406-6b5c-4594-9ca8-3a9d8912d87d" x="64" y="56" width="425" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[TEL: 067- 421234]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a1d6f2de-7404-4b8e-be33-e101f4bba534" x="64" y="30" width="425" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Kusma, Parbat]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="3b0aa0b4-08cc-4ad6-8b48-5c5509039814" x="-140" y="89" width="867" height="1"/>
+				<graphicElement>
+					<pen lineWidth="5.0" lineStyle="Double"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="bb36db69-3f5b-4a8d-816d-c2d9d2c1ea0c" x="-69" y="3" width="631" height="27"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="20" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Shree Baishali Departmental Store]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="33">
+			<rectangle>
+				<reportElement uuid="ec4694f2-596a-439f-b70d-0dab630d4f6c" x="307" y="1" width="271" height="20" backcolor="#000000"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="daec44e6-ab4f-4019-8cdf-9f8c331fc037" x="377" y="1" width="179" height="20" forecolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Product Import Report]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29" splitType="Stretch">
+			<line>
+				<reportElement uuid="cb2b19fd-a534-49e4-a1b3-fd3380d9a6fe" x="-26" y="28" width="606" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Double"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="7d9fd954-01a0-4b5d-a622-a04848de7f05" x="54" y="2" width="63" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="62044505-4f0e-486e-b64d-d19fa4f05587" x="126" y="2" width="114" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1f97f663-7926-44aa-b9a8-ac88f39cc6df" x="389" y="2" width="59" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit Price]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0a03306e-1148-482f-a0c3-ae123cba7aad" x="0" y="2" width="43" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.N.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a4fbb31f-fae5-42ec-81ed-a49702454c5f" x="470" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="802fed3d-6fa2-461f-a126-c9f101235b33" x="244" y="2" width="65" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty. Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4b6a9136-f15c-4661-a204-2c806874e03d" x="321" y="2" width="57" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Aharoni" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Qty.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<line>
+				<reportElement uuid="9c6c6d6a-0478-40ca-b4c7-146413a72110" x="-11" y="26" width="566" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Solid" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement uuid="73005b21-4dec-4b73-aec2-9942d02f69f8" x="321" y="3" width="56" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_qty}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="fb7b36bc-1993-4be9-91c3-59774918707c" x="244" y="3" width="65" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_qty_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f6beca15-0a6c-489e-82ce-01235d6fbefc" x="54" y="3" width="67" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="00be3767-102b-4a08-bb2f-9f2b788813a9" x="126" y="3" width="114" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="cca71527-5abd-4799-abfd-24a1d26989e3" x="389" y="3" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_single_price}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="85723f29-0a47-4330-9096-4bfd25f9b002" x="0" y="3" width="43" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="bef28027-b511-465b-88ce-6a8e320b6b95" x="470" y="3" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_amount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
