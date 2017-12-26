@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  *
  * @author javalok
  */
-public class TotalFinanceReport extends javax.swing.JInternalFrame {
+public class Report_Annual_Finance extends javax.swing.JInternalFrame {
 
     private JavaValidation javaValidation;
     private Connection conn;
@@ -32,7 +32,7 @@ public class TotalFinanceReport extends javax.swing.JInternalFrame {
     private double[] totalImportPrice;
 
     /** Creates new form Product_qtys_Manager */
-    public TotalFinanceReport(java.sql.Connection conn) {
+    public Report_Annual_Finance(java.sql.Connection conn) {
         initComponents();
         this.conn = conn;
         javaValidation = new JavaValidation();
@@ -231,7 +231,7 @@ public class TotalFinanceReport extends javax.swing.JInternalFrame {
         setClosable(true);
         setTitle("Total Finance Report");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Annual Finance Report"));
 
         jLabel2.setText("Start Date :");
 
@@ -311,8 +311,8 @@ public class TotalFinanceReport extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jTextFieldEnd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE))
-                        .addContainerGap(20, Short.MAX_VALUE))
+                            .addComponent(jTextFieldStartDate))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jRadioButtonDaily)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -411,7 +411,7 @@ public class TotalFinanceReport extends javax.swing.JInternalFrame {
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();

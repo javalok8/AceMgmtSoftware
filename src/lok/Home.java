@@ -11,12 +11,14 @@
 package lok;
 
 import DbHelper.DBConnection;
-import Reports.Report_Creditor;
-import Reports.Report_sell_import_damage;
-import Reports.TotalFinanceReport;
+import Reports.Report_Annual_Finance;
+import Reports.Report_Damage;
+import Reports.Report_Debit_Credit;
+import Reports.Report_Import;
+import Reports.Report_Laboring;
+import Reports.Report_Sale;
 import classgroup.DateAndTime;
 import classgroup.WindowHandler;
-import classgroup.notificationControl;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -307,7 +309,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Report_sell_import_damage rsid = new Report_sell_import_damage(conn);
+                    Report_Import rsid = new Report_Import(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(rsid);
@@ -329,7 +331,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    TotalFinanceReport tfr = new TotalFinanceReport(conn);
+                    Report_Sale tfr = new Report_Sale(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
@@ -352,7 +354,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Report_Creditor tfr = new Report_Creditor(conn);
+                    Report_Damage tfr = new Report_Damage(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
@@ -373,7 +375,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Report_Creditor tfr = new Report_Creditor(conn);
+                    Report_Debit_Credit tfr = new Report_Debit_Credit(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
@@ -394,7 +396,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Report_Creditor tfr = new Report_Creditor(conn);
+                    Report_Laboring tfr = new Report_Laboring(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
@@ -415,7 +417,7 @@ public class Home extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     updateMnuPanel();
-                    Report_Creditor tfr = new Report_Creditor(conn);
+                    Report_Annual_Finance tfr = new Report_Annual_Finance(conn);
                     desktop.removeAll();
                     desktop.repaint();
                     desktop.add(tfr);
