@@ -54,7 +54,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
     public void fillProductQtyNameCombo(String productNames) {
         try {
             System.out.println("product name inside fillProductQtynameCombo() is: " + productNames);
-            q = "select qty_name from tbl_qty_type_manager where product_name=?";
+            q = "select qty_type from tbl_qty_type_manager where product_name=?";
             new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQty, q, productNames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,7 +121,8 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
     public void delete() {
         try {
             q = "delete from tbl_damage_lost_product where id=?";
-            pstm.setInt(4,id);
+            pstm = conn.prepareStatement(q);
+            pstm.setInt(1,id);
             pstm.executeUpdate();
             pstm.close();
             JOptionPane.showMessageDialog(this, "Damage Product Record Deleted", "Damage Product Delete Information", JOptionPane.INFORMATION_MESSAGE);
@@ -146,7 +147,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
             description = jTextArea1.getText().toString();
             
-            q = "update tbl_damage_lost_product set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_price=?,product_qty=?,total_amount=? ,type=? ,description=? where id=?";
+            q = "update tbl_damage_lost_product set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_single_price=?,product_qty=?,total_amount=? ,type=? ,description=? where id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, date);
             pstm.setString(2, codeno);
@@ -171,7 +172,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
 
     public void updateJTable() {
         try {
-            q = "select date as 'Date',type as 'Type' ,product_name as 'Product Name',product_qty_name as 'Qty Name', product_price as  'Qty Price' , product_qty as 'Product Qty',total_amount as 'Total Amount', id as  'ID' from tbl_damage_lost_product";
+            q = "select date as 'Date',type as 'Type' ,product_name as 'Product Name',product_qty_name as 'Qty Name', product_single_price as  'Qty Price' , product_qty as 'Product Qty',total_amount as 'Total Amount', id as  'ID' from tbl_damage_lost_product";
             JTableHandle jth = new JTableHandle(conn);
             jth.UpdateTable(jTableDamageEntry, q);
         } catch (Exception e) {
@@ -446,25 +447,25 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 22, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxType, 0, 147, Short.MAX_VALUE)
-                            .addComponent(jTextFieldDate))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 1, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxProductName, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jTextFieldTotalAmount)
                             .addComponent(jTextFieldQty)
                             .addComponent(jTextFieldQtyPrice)
-                            .addComponent(jTextFieldProductNo)
-                            .addComponent(jComboBoxProdcutQty, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(48, 48, 48))))
+                            .addComponent(jTextFieldProductNo))
+                        .addGap(48, 48, 48))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jComboBoxProdcutQty, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBoxProductName, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBoxType, javax.swing.GroupLayout.Alignment.LEADING, 0, 147, Short.MAX_VALUE)
+                            .addComponent(jTextFieldDate, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -507,7 +508,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(35, 35, 35)
                         .addComponent(jLabel9)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -517,7 +518,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -610,20 +611,19 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
                         .addGap(29, 29, 29)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(21, 21, 21))
         );
 
@@ -665,10 +665,7 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
 
     private void jTextFieldQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyTyped
         javaValidation.getNumberValue(evt);
-           double price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-        double qty = Double.parseDouble(jTextFieldQty.getText().toString());
-        double total_amount = price*qty;
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+          
 }//GEN-LAST:event_jTextFieldQtyKeyTyped
 
     private void jComboBoxProductNameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxProductNameItemStateChanged
@@ -716,13 +713,13 @@ public class Product_damage_lost_Entry extends javax.swing.JInternalFrame {
             System.out.println("product name: " + productName);
             System.out.println("product qty name: " + productQtyName);
             try {
-                q = "select qty_price ,codeno from tbl_qty_type_manager where product_name=? and qty_name=?";
+                q = "select buying_price ,codeno from tbl_qty_type_manager where product_name=? and qty_type=?";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, productName);
                 pstm.setString(2, productQtyName);
                 rs = pstm.executeQuery();
                 if (rs.next()) {
-                    product_price = rs.getDouble("qty_price");
+                    product_price = rs.getDouble("buying_price");
                     String codeno1 = rs.getString("codeno");
                     //  total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQty.getText().toString());
                     System.out.println("prodct price: " + product_price);

@@ -55,7 +55,7 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
     public void fillProductQtyNameCombo(String productNames) {
         try {
             System.out.println("product name inside fillProductQtynameCombo() is: " + productNames);
-            q = "select qty_name from tbl_qty_type_manager where product_name=?";
+            q = "select qty_type from tbl_qty_type_manager where product_name=?";
             new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQtyType, q, productNames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,12 +123,9 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
 
     public void delete() {
         try {
-            q = "delete from tbl_credit_debit where date=? and product_name=? and qty_type=? and id=?";
+            q = "delete from tbl_credit_debit where id=?";
             pstm = conn.prepareStatement(q);
-            pstm.setString(1, jTextFieldDate.getText().toString());
-            pstm.setString(2, jComboBoxProductName.getSelectedItem().toString());
-            pstm.setString(3, jComboBoxProdcutQtyType.getSelectedItem().toString());
-            pstm.setInt(4, id);
+            pstm.setInt(1, id);
             pstm.executeUpdate();
             pstm.close();
               JOptionPane.showMessageDialog(this, "Sale Product Deleted", "Product Sale Delete Information", JOptionPane.INFORMATION_MESSAGE);
@@ -196,21 +193,13 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
 
         try {
             int myrow = jTableSelling.getSelectedRow();
-
-//            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
-//            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
-//            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            //  String qtydate_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
-            String qtyproductname_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
-            String qtyproductqtyname_click = (jTableSelling).getModel().getValueAt(myrow, 1).toString();
-            String codeno_click = (jTableSelling).getModel().getValueAt(myrow, 2).toString();
+            
+            String codeno_click = (jTableSelling).getModel().getValueAt(myrow, 6).toString();
             //q = "select *from tbl_temp_selling_product where date=? and product_name=? and product_qty_name=?";
-            q = "select *from tbl_credit_debit where product_name=? and qty_type=? and codeno=?";
+            q = "select *from tbl_credit_debit where id=?";
             pstm = conn.prepareStatement(q);
             //  pstm.setString(1, qtydate_click);
-            pstm.setString(1, qtyproductname_click);
-            pstm.setString(2, qtyproductqtyname_click);
-            pstm.setString(3,codeno_click);
+            pstm.setString(1, codeno_click);
             rs = pstm.executeQuery();
             if (rs.next()) {
                 date = rs.getString("date");
@@ -219,8 +208,7 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
                 productQtyName = rs.getString("qty_type");
                 price = rs.getDouble("product_single_price");
                 total_amount = rs.getDouble("total_amount");
-                System.out.println("Total Amount from Mouse Click() is: " + total_amount);
-        
+                product_qty = rs.getInt("total_qty");
                 description = rs.getString("description");
                 type = rs.getString("type");
                 id = rs.getInt("id");
@@ -497,16 +485,14 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
                                 .addComponent(jComboBoxProdcutQtyType, 0, 177, Short.MAX_VALUE)
                                 .addComponent(jComboBoxProductName, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(47, 47, 47)
-                                .addComponent(jComboBoxType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(47, 47, 47)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextFieldDate)
+                            .addComponent(jComboBoxType, 0, 166, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -697,10 +683,7 @@ public class Product_Debit_Credit extends javax.swing.JInternalFrame {
 
     private void jTextFieldQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyTyped
         javaValidation.getNumberValue(evt);
-        double price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-        double qty = Double.parseDouble(jTextFieldQty.getText().toString());
-        double total_amount = price*qty;
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+        
 }//GEN-LAST:event_jTextFieldQtyKeyTyped
 
     private void jTextFieldQtyPriceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldQtyPriceMouseClicked

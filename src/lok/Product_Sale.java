@@ -54,7 +54,7 @@ public class Product_Sale extends javax.swing.JInternalFrame {
     public void fillProductQtyNameCombo(String productNames) {
         try {
             System.out.println("product name inside fillProductQtynameCombo() is: " + productNames);
-            q = "select qty_name from tbl_qty_type_manager where product_name=?";
+            q = "select qty_type from tbl_qty_type_manager where product_name=?";
             new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQtyType, q, productNames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,16 +75,7 @@ public class Product_Sale extends javax.swing.JInternalFrame {
             boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo, jTextFieldQtyPrice);
             
             if (flag_tf == true) {
-                q = "select product_name , qty_type from tbl_selling where product_name=? and product_qty_name=?";
-                pstm = conn.prepareStatement(q);
-                pstm.setString(1, jComboBoxProductName.getSelectedItem().toString());
-                pstm.setString(2, jComboBoxProdcutQtyType.getSelectedItem().toString());
-                rs = pstm.executeQuery();
-                if (rs.next()) {
-                    JOptionPane.showMessageDialog(this, "Price Name Already Exists", "Dublication Warning!", JOptionPane.WARNING_MESSAGE);
-                    this.cancel();
-                    return;
-                } else {
+                
                 q = "insert into tbl_selling(date,codeno,product_name,qty_type,product_qty,product_single_price,total_amount,description) values(?,?,?,?,?,?,?,?)";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, date);
@@ -101,7 +92,7 @@ public class Product_Sale extends javax.swing.JInternalFrame {
                  JOptionPane.showMessageDialog(this, "Sale Product Added", "Sale Add Information", JOptionPane.INFORMATION_MESSAGE);
                  this.updateJTable();
                   this.cancel();
-            }
+            
             }else {
                 JOptionPane.showMessageDialog(this, "TextField is Empty", "TextField Information", JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -128,12 +119,10 @@ public class Product_Sale extends javax.swing.JInternalFrame {
 
     public void delete() {
         try {
-            q = "delete from tbl_selling where date=? and product_name=? and qty_type=? and id=?";
+            q = "delete from tbl_selling where id=?";
             pstm = conn.prepareStatement(q);
-            pstm.setString(1, jTextFieldDate.getText().toString());
-            pstm.setString(2, jComboBoxProductName.getSelectedItem().toString());
-            pstm.setString(3, jComboBoxProdcutQtyType.getSelectedItem().toString());
-            pstm.setInt(4, id);
+            
+            pstm.setInt(1, id);
             pstm.executeUpdate();
             pstm.close();
               JOptionPane.showMessageDialog(this, "Sale Product Deleted", "Product Sale Delete Information", JOptionPane.INFORMATION_MESSAGE);
@@ -199,21 +188,13 @@ public class Product_Sale extends javax.swing.JInternalFrame {
 
         try {
             int myrow = jTableSelling.getSelectedRow();
-
-//            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
-//            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
-//            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            //  String qtydate_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
-            String qtyproductname_click = (jTableSelling).getModel().getValueAt(myrow, 0).toString();
-            String qtyproductqtyname_click = (jTableSelling).getModel().getValueAt(myrow, 1).toString();
-            String codeno_click = (jTableSelling).getModel().getValueAt(myrow, 2).toString();
+            String codeno_click = (jTableSelling).getModel().getValueAt(myrow, 6).toString();
             //q = "select *from tbl_temp_selling_product where date=? and product_name=? and product_qty_name=?";
-            q = "select *from tbl_selling where product_name=? and qty_type=? and codeno=?";
+            q = "select *from tbl_selling where id=?";
             pstm = conn.prepareStatement(q);
             //  pstm.setString(1, qtydate_click);
-            pstm.setString(1, qtyproductname_click);
-            pstm.setString(2, qtyproductqtyname_click);
-            pstm.setString(3,codeno_click);
+            pstm.setString(1, codeno_click);
+           
             rs = pstm.executeQuery();
             if (rs.next()) {
                 date = rs.getString("date");
@@ -677,10 +658,7 @@ public class Product_Sale extends javax.swing.JInternalFrame {
 
     private void jTextFieldQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldQtyKeyTyped
         javaValidation.getNumberValue(evt);
-        double price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-        double qty = Double.parseDouble(jTextFieldQty.getText().toString());
-        double total_amount = price*qty;
-        jTextFieldTotalAmount.setText(String.valueOf(total_amount));
+       
 }//GEN-LAST:event_jTextFieldQtyKeyTyped
 
     private void jTextFieldQtyPriceMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldQtyPriceMouseClicked
@@ -717,13 +695,13 @@ public class Product_Sale extends javax.swing.JInternalFrame {
             System.out.println("product name: " + productName);
             System.out.println("product qty name: " + productQtyName);
             try {
-                q = "select codeno , buying_price from tbl_qty_type_manager where product_name=? and qty_type=?";
+                q = "select codeno , selling_price from tbl_price_manager where product_name=? and qty_type=?";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, productName);
                 pstm.setString(2, productQtyName);
                 rs = pstm.executeQuery();
                 if (rs.next()) {
-                    product_price = rs.getDouble("buying_price");
+                    product_price = rs.getDouble("selling_price");
                     productNo = rs.getString("codeno");
 
                     //  total_qty_amount = temp_qty_amount * Integer.parseInt(jTextFieldQty.getText().toString());

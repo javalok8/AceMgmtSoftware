@@ -143,7 +143,7 @@ public class Product_Labor extends javax.swing.JInternalFrame {
 //            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
 //            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
 //            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            String qtyid_click = (jTablePriceManager).getModel().getValueAt(myrow, 4).toString();
+            String qtyid_click = (jTablePriceManager).getModel().getValueAt(myrow, 3).toString();
             q = "select *from tbl_laboring where id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, qtyid_click);
@@ -153,7 +153,7 @@ public class Product_Labor extends javax.swing.JInternalFrame {
                 jobType = rs.getString("job_type");
                 price = rs.getDouble("amount");
                 description = rs.getString("description");
-                //price_id = rs.getInt("price_id");
+                id = rs.getInt("id");
                 System.out.println("date: " + date);
                 jTextFieldDate.setText(date);
                 jTextFieldJobType.setText(jobType);

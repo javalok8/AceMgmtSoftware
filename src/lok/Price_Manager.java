@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-/*
+ /*
  * Price_Manager.java
  *
  * Created on May 27, 2014, 3:44:39 PM
@@ -15,6 +15,7 @@ import classgroup.JTableHandle;
 import classgroup.JavaValidation;
 import java.awt.event.ItemEvent;
 import java.sql.*;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -33,7 +34,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
     private String productQtyName;
     private double price;
     private String productNo;
-   // private int price_id;
+    // private int price_id;
 
     public void fillProductNameCombo() {
 
@@ -45,11 +46,17 @@ public class Price_Manager extends javax.swing.JInternalFrame {
         }
     }
 
-    public void fillProductQtyNameCombo(String productNames) {
+    public void fillProductQtyNameCombo() {
+        String productNames = jComboBoxProductName.getSelectedItem().toString();
         try {
-            q = "select qty_name from tbl_qty_type_manager where product_name=?";
-            System.out.println("product name for fillProductQtyNameCombo() is: " + productNames);
-            new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQtyType, q, productNames);
+            q = "select qty_type from tbl_qty_type_manager where product_name=?";
+            pstm = conn.prepareStatement(q);
+            pstm.setString(1, productNames);
+            rs = pstm.executeQuery();
+            while (rs.next()) {
+                jComboBoxProdcutQtyType.addItem(rs.getString("qty_type"));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,12 +65,19 @@ public class Price_Manager extends javax.swing.JInternalFrame {
     public void fillProductNo(String productName, String qtyType) {
         try {
             q = "select codeno from tbl_qty_type_manager where qty_type=? and product_name=?";
-            new JComboHandle(conn).fillTextFieldProductNo(jTextFieldProductNo, q, productName,qtyType);
+            pstm = conn.prepareStatement(q);
+            pstm.setString(1,productName);
+            pstm.setString(2,qtyType);
+            rs = pstm.executeQuery();
+            if (rs.next()) {
+             System.out.println("fillProductNo : name and type "+ productName + ": "+qtyType + "Code NO: "+rs.getString("codeno"));
+            jTextFieldProductNo.setText(rs.getString("codeno"));
+        }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     public void add() {
         try {
 
@@ -72,13 +86,13 @@ public class Price_Manager extends javax.swing.JInternalFrame {
             productNo = jTextFieldProductNo.getText().toString();
             productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
             price = Double.parseDouble(jTextFieldQtyPrice.getText().toString());
-            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo, jTextFieldQtyPrice);
+            boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate, jTextFieldProductNo, jTextFieldQtyPrice);
             if (flag_tf == true) {
                 q = "select product_name , qty_type from tbl_price_manager where product_name=? and qty_type=? and codeno=?";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, jComboBoxProductName.getSelectedItem().toString());
                 pstm.setString(2, jComboBoxProdcutQtyType.getSelectedItem().toString());
-                pstm.setString(3,jTextFieldProductNo.getText().toString());
+                pstm.setString(3, jTextFieldProductNo.getText().toString());
                 rs = pstm.executeQuery();
                 if (rs.next()) {
                     JOptionPane.showMessageDialog(this, "Price Name Already Exists", "Dublication Warning!", JOptionPane.WARNING_MESSAGE);
@@ -88,7 +102,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
                     q = "insert into tbl_price_manager(date,codeno ,product_name,qty_type,selling_price) values(?,?,?,?,?)";
                     pstm = conn.prepareStatement(q);
                     pstm.setString(1, date);
-                    pstm.setString(2,productNo);
+                    pstm.setString(2, productNo);
                     pstm.setString(3, productName);
                     pstm.setString(4, productQtyName);
                     pstm.setDouble(5, price);
@@ -120,7 +134,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 
     public void delete() {
         try {
-            q = "delete from tbl_price_manager where product_name=? and product_qty_name=? and codeno=?";
+            q = "delete from tbl_price_manager where product_name=? and qty_type=? and codeno=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, jComboBoxProductName.getSelectedItem().toString());
             pstm.setString(2, jComboBoxProdcutQtyType.getSelectedItem().toString());
@@ -139,7 +153,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 
     public void update() {
         try {
-             date = jTextFieldDate.getText().toString();
+            date = jTextFieldDate.getText().toString();
             productName = jComboBoxProductName.getSelectedItem().toString();
             productNo = jTextFieldProductNo.getText().toString();
             productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
@@ -147,12 +161,12 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 
             q = "update tbl_price_manager set date=? ,codeno=? , product_name=? ,qty_type=?, selling_price=?  where codeno=?";
             pstm = conn.prepareStatement(q);
-             pstm.setString(1, date);
-                    pstm.setString(2,productNo);
-                    pstm.setString(3, productName);
-                    pstm.setString(4, productQtyName);
-                    pstm.setDouble(5, price);
-                    pstm.setString(6,productNo);
+            pstm.setString(1, date);
+            pstm.setString(2, productNo);
+            pstm.setString(3, productName);
+            pstm.setString(4, productQtyName);
+            pstm.setDouble(5, price);
+            pstm.setString(6, productNo);
             pstm.executeUpdate();
             pstm.close();
             JOptionPane.showMessageDialog(this, "Product Price Updated", "Product Price Update Information", JOptionPane.INFORMATION_MESSAGE);
@@ -187,7 +201,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 //            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
 //            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
 //            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            String qtyid_click = (jTablePriceManager).getModel().getValueAt(myrow, 4).toString();
+            String qtyid_click = (jTablePriceManager).getModel().getValueAt(myrow, 1).toString();
             q = "select *from tbl_price_manager where codeno=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, qtyid_click);
@@ -212,7 +226,9 @@ public class Price_Manager extends javax.swing.JInternalFrame {
         }
     }
 
-    /** Creates new form Price_Manager */
+    /**
+     * Creates new form Price_Manager
+     */
     public Price_Manager(java.sql.Connection conn) {
         initComponents();
         this.conn = conn;
@@ -225,10 +241,10 @@ public class Price_Manager extends javax.swing.JInternalFrame {
         javaValidation = new JavaValidation();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -257,7 +273,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
         setClosable(true);
         setTitle("Price Manager");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Product Name Entry"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Price Manager"));
 
         jLabel1.setText("Product Name");
 
@@ -317,6 +333,7 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Product No");
 
+        jTextFieldProductNo.setEditable(false);
         jTextFieldProductNo.setToolTipText("");
         jTextFieldProductNo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -544,12 +561,15 @@ public class Price_Manager extends javax.swing.JInternalFrame {
             if (jComboBoxProductName.getSelectedItem().toString().equalsIgnoreCase("-")) {
                 return;
             }
-            productName = jComboBoxProductName.getSelectedItem().toString();
-            System.out.println("Selected Product Name is: " + productName);
+          
             if (jComboBoxProdcutQtyType.getModel() != null) {
                 jComboBoxProdcutQtyType.removeAllItems();
             }
-            this.fillProductQtyNameCombo(productName);
+            
+            jComboBoxProdcutQtyType.addItem("-");
+            this.fillProductQtyNameCombo();
+
+        
         }
     }//GEN-LAST:event_jComboBoxProductNameItemStateChanged
 
@@ -587,18 +607,31 @@ public class Price_Manager extends javax.swing.JInternalFrame {
 
     private void jComboBoxProdcutQtyTypeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxProdcutQtyTypeItemStateChanged
         // TODO add your handling code here:
-         if (evt.getStateChange() == ItemEvent.SELECTED) {
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            
             if (jComboBoxProdcutQtyType.getSelectedItem().toString().equalsIgnoreCase("-")) {
                 return;
             }
+            try {
             productName = jComboBoxProductName.getSelectedItem().toString();
             productQtyName = jComboBoxProdcutQtyType.getSelectedItem().toString();
-            System.out.println("Selected Product Name is: " + productName);
-            if (jComboBoxProdcutQtyType.getModel() != null) {
-                jComboBoxProdcutQtyType.removeAllItems();
-            }
-            this.fillProductNo(productName,productQtyName);
+            System.out.println("ITEM STATE CHANGED .......");
+            System.out.println("PPPPP : name and type "+ productName + ": "+productQtyName +"");
+            
+            
+            q = "select codeno from tbl_qty_type_manager where qty_type=? and product_name=?";
+            pstm = conn.prepareStatement(q);
+            pstm.setString(1,productQtyName);
+            pstm.setString(2,productName);
+            rs = pstm.executeQuery();
+             while(rs.next()){
+                 jTextFieldProductNo.setText(rs.getString("codeno"));
+             }
+             
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+       }
     }//GEN-LAST:event_jComboBoxProdcutQtyTypeItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

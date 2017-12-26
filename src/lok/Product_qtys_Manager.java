@@ -57,7 +57,7 @@ public class Product_qtys_Manager extends javax.swing.JInternalFrame {
             boolean flag_tf = new JavaValidation().checkEmptyTextField(jTextFieldDate,jTextFieldProductNo
                     ,jTextFieldQtyName,jTextFieldQtyPrice,jTextFieldQtyAmount);
             if (flag_tf == true) {
-            q = "select product_name , qty_name from tbl_qty_type_manager where product_name=? and qty_name=? and codeno=?";
+            q = "select product_name , qty_type from tbl_qty_type_manager where product_name=? and qty_type=? and codeno=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1,jComboBoxProductName.getSelectedItem().toString());
             pstm.setString(2,jTextFieldQtyName.getText().toString());
@@ -105,7 +105,7 @@ public class Product_qtys_Manager extends javax.swing.JInternalFrame {
 
     public void delete(){
         try{
-            q = "delete from tbl_qty_type_manager where product_name=? and qty_name=? and codeno=?";
+            q = "delete from tbl_qty_type_manager where product_name=? and qty_type=? and codeno=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, jComboBoxProductName.getSelectedItem().toString());
             pstm.setString(2,jTextFieldQtyName.getText().toString());
@@ -132,7 +132,7 @@ public class Product_qtys_Manager extends javax.swing.JInternalFrame {
             qty_amount = Integer.parseInt(jTextFieldQtyAmount.getText().toString());
 
             //q = "update tbl_qty_type_manager set date=? ,codeno=?, qty_type=? , buying_price=? , product_name=? ,qty_amount=? where qty_id=?";
-            q = "update tbl_qty_type_manager set date=? ,codeno=?, qty_type=? , buying_price=? , product_name=? ,qty_amount=? where codeno=?";
+            q = "update tbl_qty_type_manager set date=? ,codeno=?, product_name=?, qty_type=? ,qty_amount=? , buying_price=? where codeno=?";
             pstm = conn.prepareStatement(q);
             pstm = conn.prepareStatement(q);
                 pstm.setString(1,date);
@@ -176,7 +176,7 @@ public class Product_qtys_Manager extends javax.swing.JInternalFrame {
 //            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
 //            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
 //            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            String qtyid_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 5).toString();
+            String qtyid_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
             q = "select *from tbl_qty_type_manager where codeno=?";
             pstm = conn.prepareStatement(q);    
             pstm.setString(1,qtyid_click);

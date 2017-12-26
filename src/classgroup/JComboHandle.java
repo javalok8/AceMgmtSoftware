@@ -70,7 +70,7 @@ public class JComboHandle {
         pstm.setString(1,param);
         rs = pstm.executeQuery();
         while (rs.next()) {
-            combo.addItem(rs.getString("qty_name"));
+            combo.addItem(rs.getString("qty_type"));
         }
 
     }

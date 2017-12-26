@@ -81,7 +81,7 @@
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                <TitledBorder title="Product Name Entry"/>
+                <TitledBorder title="Price Manager"/>
               </Border>
             </Property>
           </Properties>
@@ -238,6 +238,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="jTextFieldProductNo">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>

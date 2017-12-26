@@ -54,7 +54,7 @@ public class Product_Import extends javax.swing.JInternalFrame {
     public void fillProductQtyNameCombo(String productNames) {
         try {
 
-            q = "select qty_name from tbl_qty_type_manager where product_name=?";
+            q = "select qty_type from tbl_qty_type_manager where product_name=?";
             new JComboHandle(conn).fillComboByProductQtyType(jComboBoxProdcutQtyType, q, productNames);
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,11 +129,10 @@ public class Product_Import extends javax.swing.JInternalFrame {
 
     public void delete() {
         try {
-            q = "delete from tbl_import_product_record where product_name=? and product_qty_name=? and import_id=?";
+            q = "delete from tbl_import_product_record where codeno=? and id=?";
             pstm = conn.prepareStatement(q);
-            pstm.setString(1, jComboBoxProductName.getSelectedItem().toString());
-            pstm.setString(2, jComboBoxProdcutQtyType.getSelectedItem().toString());
-            pstm.setInt(3, import_id);
+            pstm.setString(1, jTextFieldProductNo.getText().toString());
+            pstm.setInt(2, import_id);
             pstm.executeUpdate();
             pstm.close();
             JOptionPane.showMessageDialog(this, "Product Deleted", "Product Delete Information", JOptionPane.INFORMATION_MESSAGE);
@@ -157,7 +156,8 @@ public class Product_Import extends javax.swing.JInternalFrame {
             total_amount = Double.parseDouble(jTextFieldTotalAmount.getText().toString());
             description = jTextAreaDescription.getText().toString();
 
-            q = "update tbl_import_product_record set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_single_price=?,product_qty=? , total_amount=? ,qty_amount=? , description = ? where import_id=?";
+            q = "update tbl_import_product_record set date=? ,codeno=? , product_name=? ,product_qty_name=?, product_single_price=?,product_qty=? "
+                    + ", total_amount=? ,qty_amount=? , description = ? where id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, date);
                 pstm.setString(2,productNo);
@@ -203,8 +203,8 @@ public class Product_Import extends javax.swing.JInternalFrame {
 //            String date_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 0).toString();
 //            String productname_click = (jTableProductQtyManager).getModel().getValueAt(myrow, 1).toString();
 //            String productqtyname_click =(jTableProductQtyManager).getModel().getValueAt(myrow, 2).toString();
-            String qtyid_click = (jTableProductImport).getModel().getValueAt(myrow, 6).toString();
-            q = "select *from tbl_import_product_record where import_id=?";
+            String qtyid_click = (jTableProductImport).getModel().getValueAt(myrow, 7).toString();
+            q = "select *from tbl_import_product_record where id=?";
             pstm = conn.prepareStatement(q);
             pstm.setString(1, qtyid_click);
             rs = pstm.executeQuery();
@@ -216,9 +216,9 @@ public class Product_Import extends javax.swing.JInternalFrame {
                 price = rs.getDouble("product_single_price");
                 product_qty = rs.getInt("product_qty");
                 total_amount = rs.getDouble("total_amount");
-                total_qty_amount = rs.getInt("total_qty_amount");
+                total_qty_amount = rs.getInt("qty_amount");
                 description = rs.getString("description");
-                import_id = rs.getInt("import_id");
+                import_id = rs.getInt("id");
 
                 jTextFieldDate.setText(date);
                 jTextFieldProductNo.setText(productNo);
@@ -704,13 +704,13 @@ public class Product_Import extends javax.swing.JInternalFrame {
             System.out.println("product name: " + productName);
             System.out.println("product qty name: " + productQtyName);
             try {
-                q = "select codeno , qty_price , qty_amount from tbl_qty_type_manager where product_name=? and qty_name=?";
+                q = "select codeno , buying_price , qty_amount from tbl_qty_type_manager where product_name=? and qty_type=?";
                 pstm = conn.prepareStatement(q);
                 pstm.setString(1, productName);
                 pstm.setString(2, productQtyName);
                 rs = pstm.executeQuery();
                 if (rs.next()) {
-                    product_price = rs.getDouble("qty_price");
+                    product_price = rs.getDouble("buying_price");
                     temp_qty_amount = rs.getInt("qty_amount");
                     productNo = rs.getString("codeno");
                     System.out.println("Temp qty amount: " + temp_qty_amount);
