@@ -11,7 +11,27 @@
 package Reports;
 
 import classgroup.JavaValidation;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
+import model.DamageModel;
+import model.LaboringModel;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import pojo.Damage;
+import pojo.Laboring;
 
 /**
  *
@@ -24,6 +44,279 @@ public class Report_Damage extends javax.swing.JInternalFrame {
     private PreparedStatement pstm = null;
     private ResultSet rs = null;
     private String q = "";
+    
+     public void cancel(){
+        jRadioButtonDaily.setSelected(false);
+        jRadioButtonMonthly.setSelected(false);
+       jTextFieldStartDate.setEnabled(true);
+       jTextFieldStartDate.setText("");
+        jTextFieldStartDate.setVisible(true);
+        jLabel3.setVisible(true);
+        jTextFieldEndDate.setEnabled(false);
+        jTextFieldEndDate.setVisible(false);
+        jLabel4.setVisible(false);
+        jPanel1.updateUI();
+        jPanel1.revalidate(); 
+        
+    }
+    public void generateReport() {
+        try {
+
+            String startdate = jTextFieldStartDate.getText().toString();
+            String enddate = jTextFieldEndDate.getText().toString().toString();
+
+            //Report format 
+            DamageModel sellingModel = new DamageModel(conn);
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("Damage Report"); // you can add param as sheet also
+            //create heading 
+            Row rowHeading = sheet.createRow(0);
+            rowHeading.createCell(0).setCellValue("Date");
+            rowHeading.createCell(1).setCellValue("Code No");
+            rowHeading.createCell(2).setCellValue("Product Name");
+            rowHeading.createCell(3).setCellValue("Quantity Type");
+            rowHeading.createCell(4).setCellValue("Total Quantity");
+            rowHeading.createCell(5).setCellValue("Single Price");
+            rowHeading.createCell(6).setCellValue("Total Amount");
+             rowHeading.createCell(7).setCellValue("Type");
+            rowHeading.createCell(8).setCellValue("Description");
+
+            //styling heading
+            for (int i = 0; i < 9; i++) {
+                CellStyle stylerowHeading = workbook.createCellStyle();
+                Font font = workbook.createFont();
+                font.setBold(true);
+                font.setFontName(HSSFFont.FONT_ARIAL);
+                font.setFontHeightInPoints((short) 11);
+                stylerowHeading.setFont(font);
+                stylerowHeading.setVerticalAlignment(VerticalAlignment.CENTER);
+                rowHeading.getCell(i).setCellStyle(stylerowHeading);
+
+            }
+
+            List<Damage> result = new ArrayList<Damage>();
+            if (jRadioButtonDaily.isSelected()) {
+
+                System.out.println("Daily is Selected : ");
+                //Dailty Report
+                    //all report       
+                    result = sellingModel.findAllProducts(startdate);
+
+                    //////////////////////////////////////////////////////////////////////
+                    ///// file All daily products ///////////////////////////////////////
+                    ////////////////////////////////////////////////////////////////////
+                    //all report desigh
+                    int r = 1;
+                    for (Damage p : result) {
+                        Row row = sheet.createRow(r);
+                        //date 
+                        Cell date = row.createCell(0);
+                        date.setCellValue(p.getDate());
+                        //codeno
+                        Cell codeno = row.createCell(1);
+                        codeno.setCellValue(p.getCodeNo());
+                        //product name column 
+                        Cell productNames = row.createCell(2);
+                        productNames.setCellValue(p.getProductName());
+                        //product qty
+                        Cell qtyName = row.createCell(3);
+                        qtyName.setCellValue(p.getQtyType());
+                        //product qty
+                        Cell productQty = row.createCell(4);
+                        productQty.setCellValue(p.getTotalQuantity());
+                        //product qty
+                        Cell productPrice = row.createCell(5);
+                        productPrice.setCellValue(p.getSinglePrice());
+                        //product qty
+                        Cell totalAmount = row.createCell(6);
+                        totalAmount.setCellValue(p.getTotalAmount());
+                        //product qty
+                        Cell type = row.createCell(7);
+                        type.setCellValue(p.getDescription());
+                        
+                        //description column
+                        Cell description = row.createCell(8);
+                        description.setCellValue(p.getType());
+                      
+                        r++;
+                    }
+
+                    //total Column
+                    Row rowTotal = sheet.createRow(sellingModel.findAllProducts(startdate).size() + 1);
+                    Cell cellTextTotal = rowTotal.createCell(0);
+                    int total_size = sellingModel.findAllProducts(startdate).size() + 2;
+                    System.out.println("Total Size = " + total_size);
+                    cellTextTotal.setCellValue("Total ");
+                    CellRangeAddress region = CellRangeAddress.valueOf("A" + total_size + ":B" + total_size + "");
+                    sheet.addMergedRegion(region);
+                    CellStyle styleTotal = workbook.createCellStyle();
+                    Font fontTextTotal = workbook.createFont();
+                    fontTextTotal.setBold(true);
+                    fontTextTotal.setFontHeightInPoints((short) 10);
+                    fontTextTotal.setColor(HSSFColor.RED.index);
+                    styleTotal.setFont(fontTextTotal);
+                    styleTotal.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTextTotal.setCellStyle(styleTotal);
+
+                    //total qty
+                    Cell cellTotalQty = rowTotal.createCell(4);
+                    int total_colum_qty = sellingModel.findAllProducts(startdate).size() + 1;
+                    System.out.println("Total qty amount : " + total_colum_qty);
+                    cellTotalQty.setCellFormula("sum(E2" + ":E" + total_colum_qty + ")" + "");
+                    HSSFDataFormat cfsb = workbook.createDataFormat();
+                    CellStyle styleTotalValue = workbook.createCellStyle();
+                    //styleTotalValue.setDataFormat(cfsb.getFormat("#,##0.00"));
+                    Font fontTextTotals = workbook.createFont();
+                    fontTextTotals.setBold(true);
+                    fontTextTotals.setFontHeightInPoints((short) 10);
+                    fontTextTotals.setColor(HSSFColor.RED.index);
+                    styleTotalValue.setFont(fontTextTotals);
+                    styleTotalValue.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTotalQty.setCellStyle(styleTotalValue);
+
+                    //Total amount
+                    Cell cellTotalAmount = rowTotal.createCell(6);
+                    //int total_colum_qty = sellingModel.findAllProducts(startdate).size() + 1;
+                    cellTotalAmount.setCellFormula("sum(G2" + ":G" + total_colum_qty + ")" + "");
+                    HSSFDataFormat cfsbs = workbook.createDataFormat();
+                    CellStyle styleTotals = workbook.createCellStyle();
+                    styleTotals.setDataFormat(cfsbs.getFormat("#,##0.00"));
+                    Font fontTextTotalss = workbook.createFont();
+                    fontTextTotalss.setBold(true);
+                    fontTextTotalss.setFontHeightInPoints((short) 10);
+                    fontTextTotalss.setColor(HSSFColor.RED.index);
+                    styleTotals.setFont(fontTextTotalss);
+                    styleTotals.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTotalAmount.setCellStyle(styleTotals);
+
+                    //Autofit
+                    for (int i = 0; i < 8; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+                    System.out.println("Result object inside is  : " + result);
+                    FileOutputStream out = new FileOutputStream(new File("d:\\DamageDailyReport.xls"));
+                    workbook.write(out);
+                    out.close();
+                    workbook.close();
+                
+            } else {
+                //Monthly Report
+                    //all report
+                    result = sellingModel.findAllProducts(startdate, enddate);
+                    //////////////////////////////////////////////////////////////////////
+                    ///// file All monthly products ///////////////////////////////////////
+                    ////////////////////////////////////////////////////////////////////
+                    //all report desigh
+                    int r = 1;
+                    for (Damage p : result) {
+                         Row row = sheet.createRow(r);
+                        //date 
+                        Cell date = row.createCell(0);
+                        date.setCellValue(p.getDate());
+                        //codeno
+                        Cell codeno = row.createCell(1);
+                        codeno.setCellValue(p.getCodeNo());
+                        //product name column 
+                        Cell productNames = row.createCell(2);
+                        productNames.setCellValue(p.getProductName());
+                        //product qty
+                        Cell qtyName = row.createCell(3);
+                        qtyName.setCellValue(p.getQtyType());
+                        //product qty
+                        Cell productQty = row.createCell(4);
+                        productQty.setCellValue(p.getTotalQuantity());
+                        //product qty
+                        Cell productPrice = row.createCell(5);
+                        productPrice.setCellValue(p.getSinglePrice());
+                        //product qty
+                        Cell totalAmount = row.createCell(6);
+                        totalAmount.setCellValue(p.getTotalAmount());
+                         //product qty
+                        Cell type = row.createCell(7);
+                        type.setCellValue(p.getDescription());
+                        
+                        //description column
+                        Cell description = row.createCell(8);
+                        description.setCellValue(p.getType());
+                     
+                        r++;
+                    }
+
+                    //total Column
+                    Row rowTotal = sheet.createRow(sellingModel.findAllProducts(startdate, enddate).size() + 1);
+                    Cell cellTextTotal = rowTotal.createCell(0);
+                    int total_size = sellingModel.findAllProducts(startdate, enddate).size() + 2;
+                    System.out.println("Total Size = " + total_size);
+                    cellTextTotal.setCellValue("Total ");
+                    CellRangeAddress region = CellRangeAddress.valueOf("A" + total_size + ":B" + total_size + "");
+                    sheet.addMergedRegion(region);
+                    CellStyle styleTotal = workbook.createCellStyle();
+                    Font fontTextTotal = workbook.createFont();
+                    fontTextTotal.setBold(true);
+                    fontTextTotal.setFontHeightInPoints((short) 10);
+                    fontTextTotal.setColor(HSSFColor.RED.index);
+                    styleTotal.setFont(fontTextTotal);
+                    styleTotal.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTextTotal.setCellStyle(styleTotal);
+
+                     //total qty
+                    Cell cellTotalQty = rowTotal.createCell(4);
+                    int total_colum_qty = sellingModel.findAllProducts(startdate, enddate).size() + 1;
+                    System.out.println("Total qty amount : " + total_colum_qty);
+                    cellTotalQty.setCellFormula("sum(E2" + ":E" + total_colum_qty + ")" + "");
+                    HSSFDataFormat cfsb = workbook.createDataFormat();
+                    CellStyle styleTotalValue = workbook.createCellStyle();
+                    //styleTotalValue.setDataFormat(cfsb.getFormat("#,##0.00"));
+                    Font fontTextTotals = workbook.createFont();
+                    fontTextTotals.setBold(true);
+                    fontTextTotals.setFontHeightInPoints((short) 10);
+                    fontTextTotals.setColor(HSSFColor.RED.index);
+                    styleTotalValue.setFont(fontTextTotals);
+                    styleTotalValue.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTotalQty.setCellStyle(styleTotalValue);
+                    
+                    //Total amount
+                    Cell cellTotalAmount = rowTotal.createCell(6);
+                   // int total_colum_qty = sellingModel.findAllProducts(startdate, enddate).size() + 1;
+                    cellTotalAmount.setCellFormula("sum(G2" + ":G" + total_colum_qty + ")" + "");
+                    HSSFDataFormat cfsbs = workbook.createDataFormat();
+                    CellStyle styleTotals = workbook.createCellStyle();
+                    styleTotals.setDataFormat(cfsbs.getFormat("#,##0.00"));
+                    Font fontTextTotalss = workbook.createFont();
+                    fontTextTotalss.setBold(true);
+                    fontTextTotalss.setFontHeightInPoints((short) 10);
+                    fontTextTotalss.setColor(HSSFColor.RED.index);
+                    styleTotals.setFont(fontTextTotalss);
+                    styleTotals.setVerticalAlignment(VerticalAlignment.CENTER);
+                    cellTotalAmount.setCellStyle(styleTotals);
+
+                    //Autofit
+                    for (int i = 0; i < 8; i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+                    FileOutputStream out = new FileOutputStream(new File("d:\\DamageMonthlyReport.xls"));
+                    workbook.write(out);
+                    out.close();
+                    workbook.close();
+                
+            }
+
+            System.out.print("TEST");
+            //save to excel file
+//            FileOutputStream out = new FileOutputStream(new File("d:\\SellingReport.xls"));
+//            workbook.write(out);
+//            out.close();
+//            workbook.close();
+
+            System.out.println("Excel written successfully....");
+            
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     /** Creates new form Product_qtys_Manager */
     public Report_Damage(java.sql.Connection conn) {
@@ -174,10 +467,10 @@ public class Report_Damage extends javax.swing.JInternalFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE))
-                .addGap(21, 21, 21)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextFieldStartDate)
-                    .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextFieldEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -306,11 +599,19 @@ public class Report_Damage extends javax.swing.JInternalFrame {
 }//GEN-LAST:event_jTextFieldStartDateKeyTyped
 
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-
+  try{
+            this.generateReport();
+            JOptionPane.showMessageDialog(this, "Your Report Generated", "D:/ Location", JOptionPane.INFORMATION_MESSAGE);
+       }catch(Exception e){
+           e.printStackTrace();
+           JOptionPane.showMessageDialog(this, "Please Follow the probper instruction", "D:/ Location", JOptionPane.INFORMATION_MESSAGE);
+           
+       }
         
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelActionPerformed
+          this.cancel();
     }//GEN-LAST:event_jButtonCancelActionPerformed
 
     private void jTextFieldEndDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextFieldEndDateMouseClicked

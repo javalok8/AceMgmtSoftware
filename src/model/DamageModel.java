@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import pojo.Damage;
 import pojo.Import;
 
 /**
@@ -31,18 +32,18 @@ public class DamageModel {
     
     
     //find all product with start date
-     public List<Import> findAllProducts(String date){
+     public List<Damage> findAllProducts(String date){
         try{
            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                    List<Import> result = new ArrayList<>();
+                    List<Damage> result = new ArrayList<>();
                     q="select *from tbl_damage_lost_product where date=?";
                     pstm = conn.prepareStatement(q);
                     pstm.setString(1,date);
                     rs = pstm.executeQuery();
                     while(rs.next()){
-                        result.add(new Import(rs.getString("date"), rs.getString("codeno"), rs.getString("product_name"),
+                        result.add(new Damage(rs.getString("date"), rs.getString("codeno"), rs.getString("product_name"),
                                 rs.getString("product_qty_name"), rs.getInt("product_qty"), rs.getDouble("product_single_price"),
-                                rs.getDouble("total_amount"), rs.getString("description")));
+                                rs.getDouble("total_amount"),rs.getString("type"), rs.getString("description")));
                     }
             return result;
         }catch(Exception e){
@@ -51,9 +52,9 @@ public class DamageModel {
     }
      
     //find single product with start dste
-     public List<Import> findAllProducts(String startDate ,String endDate){
+     public List<Damage> findAllProducts(String startDate ,String endDate){
         try{
-                    List<Import> result = new ArrayList<>();
+                    List<Damage> result = new ArrayList<>();
                     q = "select *from tbl_damage_lost_product where date between  '" + startDate + "' and '" + endDate + "'";
                     //q = "select *from tbl_selling where date between ? and ?";
                     pstm = conn.prepareStatement(q);
@@ -61,9 +62,9 @@ public class DamageModel {
                   //  pstm.setDate(2,endDate);
                     rs = pstm.executeQuery();
                     while(rs.next()){
-                        result.add(new Import(rs.getString("date"), rs.getString("codeno"), rs.getString("product_name"),
+                         result.add(new Damage(rs.getString("date"), rs.getString("codeno"), rs.getString("product_name"),
                                 rs.getString("product_qty_name"), rs.getInt("product_qty"), rs.getDouble("product_single_price"),
-                                rs.getDouble("total_amount"), rs.getString("description")));
+                                rs.getDouble("total_amount"),rs.getString("type"), rs.getString("description")));
                     }
             return result;
         }catch(Exception e){
